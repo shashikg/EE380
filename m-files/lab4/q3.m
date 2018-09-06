@@ -56,11 +56,13 @@ ci = -0.5155; di = 0.0355;
 
 sd = 100;    % Desired motor speed in rad/sec. 
 sa(1) = 0;   % Initial actual speed (sa = yp).
+sahat(1) = 0;
 xc(1) = 0;   % Initial state of controller. 
 yc(1) = 0;   % Intial output of controller.
 xp(1) = 0;   % Initial state of plant.
+xphat(1) = 0;   % Initial state of plant.
 for k = 1:tcfin/Tc
-  uc(k) = sd - sa(k);
+  uc(k) = sd - sahat(k);
   xc(k+1) = a*xc(k) + b*uc(k);
   yc(k) = c*xc(k) + d*uc(k);
   % Hold last sample of controller output:
@@ -69,15 +71,25 @@ for k = 1:tcfin/Tc
   % controller output as the input to the plant.
   
   for i = 1:Tc/Tp-1
-    xp = ai*xp + bi*up;
+    xphat = ai*xphat + bi*up;
+    xp = (1-Tp*w)*xp + Tp*up;
     % This is the equation
-    % xp(k+1) = (1-Tp*w)*xp(k) + Tp*up;
+    %xp(k+1) = (1-Tp*w)*xp(k) + Tp*up;
   end
-  ip(k) = ci*xp + di*up;
-  sa(k+1) = (up - 28.2002*ip(k))/0.0209;
+  ip(k) = ci*xphat + di*up;
+  sahat(k+1) = (up - 28.2002*ip(k))/0.0209;
+  yp(k) = K*xp;
+  sa(k+1) = yp(k);
 end
 
 t = (0:tcfin/Tc)*Tc;
-save ('q32.mat', 'sa', 't', 'yc')
-plot(t,sa); grid(gca,'minor');
+save ('q32.mat', 'sa', 't', 'yc', 'sahat')
+
+plot(t, sa, t, sahat); grid(gca,'minor');
+legend('w', ...
+'w hat');
+title('w and w hat for Current Control');
+xlabel('t');
+ylabel('w and w hat');
+print('plots/Speed', '-dpdf')
 %print -depsc Tc0-0001.eps
