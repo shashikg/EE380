@@ -54,7 +54,7 @@ ci = -0.5155; di = 0.0355;
 
 % Continuous-time plant discrete-time controller
 
-sd = 1;    % Desired motor speed in rad/sec. 
+sd = 100;    % Desired motor speed in rad/sec. 
 sa(1) = 0;   % Initial actual speed (sa = yp).
 xc(1) = 0;   % Initial state of controller. 
 yc(1) = 0;   % Intial output of controller.
@@ -78,5 +78,6 @@ for k = 1:tcfin/Tc
 end
 
 t = (0:tcfin/Tc)*Tc;
+save ('q32.mat', 'sa', 't', 'yc')
 plot(t,sa); grid(gca,'minor');
 %print -depsc Tc0-0001.eps

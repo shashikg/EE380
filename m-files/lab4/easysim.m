@@ -75,5 +75,6 @@ for k = 1:tcfin/Tc
 end
 
 t = (0:tcfin/Tc)*Tc;
+save ('q31.mat', 'sa', 't', 'yc')
 plot(t,sa); grid(gca,'minor');
 %print -depsc Tc0-0001.eps
